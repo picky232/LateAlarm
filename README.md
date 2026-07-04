@@ -1,5 +1,7 @@
 # 지각 알리미 🏃
 
+[![CI](https://github.com/picky232/LateAlarm/actions/workflows/ci.yml/badge.svg)](https://github.com/picky232/LateAlarm/actions/workflows/ci.yml)
+
 > 내가 얼마나 늦는지, 기다리는 사람이 실시간으로 알 수 있는 앱
 
 개인 포트폴리오 / 학습용 크로스플랫폼 PWA
@@ -125,7 +127,22 @@ npm start
 - [x] **Phase 1** — Next.js 세팅, 카카오맵 연동, ODsay 연동, 이동 수단 비교 화면
 - [x] **Phase 2** — Firebase 실시간 위치 공유, 수신자 추적 지도
 - [x] **Phase 3** — Turn-by-Turn 자동 구간 진행, 환승 알림(진동·Web Notification), 설정 페이지(`/settings`) 및 엘리베이터 선호 반영, 진행 구간 지도 강조
-- [ ] **Phase 4** — 성능 최적화, 접근성, Vercel 최종 배포
+- [x] **Phase 4a** — CI/CD 구축 (GitHub Actions + Vercel 자동 배포)
+- [ ] **Phase 4b** — 성능 최적화, 접근성
+
+---
+
+## CI/CD
+
+| 브랜치 | 역할 | 자동화 |
+|--------|------|--------|
+| `dev` | 개발 | push 시 GitHub Actions CI (lint+build) + Vercel **프리뷰 배포** |
+| `main` | 배포 | PR 머지로만 갱신 (CI 통과 필수) → Vercel **프로덕션 배포** |
+
+흐름: `dev`에 push → CI·프리뷰로 검증 → `dev` → `main` PR → CI 통과 시 머지 → 프로덕션 자동 배포.
+
+프로덕션: https://late-alarm.vercel.app
+(카카오·ODsay 콘솔에 프로덕션 도메인 등록 필요)
 
 ---
 
