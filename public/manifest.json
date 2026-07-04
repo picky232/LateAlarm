@@ -1,0 +1,11 @@
+{
+  "name": "지각 알리미",
+  "short_name": "지각알리미",
+  "description": "내가 얼마나 늦는지, 기다리는 사람이 실시간으로 알 수 있는 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fb",
+  "theme_color": "#2563EB",
+  "orientation": "portrait",
+  "icons": []
+}
