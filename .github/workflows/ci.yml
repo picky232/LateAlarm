@@ -23,8 +23,6 @@ jobs:
 
       - name: Lint
         run: npm run lint
-        # 기존 코드에 남은 lint 에러가 있어 경고로만 취급 (신규 에러는 코드리뷰에서 관리)
-        continue-on-error: true
 
       - name: Build
         run: npm run build

@@ -1,6 +1,7 @@
 'use client';
 
 import { RouteSegment } from '@/shared/types';
+import { SEGMENT_ACTION_LABEL, TRANSPORT_ICON } from '@/frontend/constants';
 
 interface Props {
   currentSegment: RouteSegment;
@@ -8,22 +9,6 @@ interface Props {
   arrivalTime: Date;
   remainingMinutes: number;
 }
-
-const SEGMENT_LABEL: Record<string, string> = {
-  WALK: '도보 이동',
-  BUS: '버스 탑승',
-  SUBWAY: '지하철 탑승',
-  TAXI: '택시 탑승',
-  CAR: '승용차 운전',
-};
-
-const SEGMENT_ICON: Record<string, string> = {
-  WALK: '🚶',
-  BUS: '🚌',
-  SUBWAY: '🚇',
-  TAXI: '🚕',
-  CAR: '🚗',
-};
 
 export function NavigationCard({ currentSegment, nextSegment, arrivalTime, remainingMinutes }: Props) {
   const arrivalStr = new Date(arrivalTime).toLocaleTimeString('ko-KR', {
@@ -50,9 +35,9 @@ export function NavigationCard({ currentSegment, nextSegment, arrivalTime, remai
         className="flex items-center gap-3 p-3 rounded-2xl"
         style={{ backgroundColor: currentSegment.lineColor ? `${currentSegment.lineColor}22` : '#f3f4f6' }}
       >
-        <span className="text-3xl">{SEGMENT_ICON[currentSegment.type]}</span>
+        <span className="text-3xl">{TRANSPORT_ICON[currentSegment.type]}</span>
         <div>
-          <p className="text-xs font-medium text-gray-500">{SEGMENT_LABEL[currentSegment.type]}</p>
+          <p className="text-xs font-medium text-gray-500">{SEGMENT_ACTION_LABEL[currentSegment.type]}</p>
           <p className="font-bold text-gray-900">
             {currentSegment.lineName
               ? `${currentSegment.lineName} 탑승`
@@ -67,8 +52,8 @@ export function NavigationCard({ currentSegment, nextSegment, arrivalTime, remai
       {/* 다음 행동 */}
       {nextSegment && (
         <div className="flex items-center gap-2 px-1 text-sm text-gray-400">
-          <span>{SEGMENT_ICON[nextSegment.type]}</span>
-          <span>다음: {nextSegment.startName}에서 {SEGMENT_LABEL[nextSegment.type]}</span>
+          <span>{TRANSPORT_ICON[nextSegment.type]}</span>
+          <span>다음: {nextSegment.startName}에서 {SEGMENT_ACTION_LABEL[nextSegment.type]}</span>
         </div>
       )}
     </div>

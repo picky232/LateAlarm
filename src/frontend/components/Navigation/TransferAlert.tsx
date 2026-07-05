@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { RouteSegment } from '@/shared/types';
+import { TRANSPORT_LABEL } from '@/frontend/constants';
 
 interface Props {
   /** 환승해서 탑승할 다음 구간 */
@@ -9,11 +10,6 @@ interface Props {
   /** 환승 지점까지 남은 거리 (m) */
   distanceMeters: number | null;
 }
-
-const TYPE_LABEL: Record<string, string> = {
-  BUS: '버스',
-  SUBWAY: '지하철',
-};
 
 /**
  * 환승 접근 알림 배너.
@@ -35,7 +31,7 @@ export function TransferAlert({ nextSegment, distanceMeters }: Props) {
     if (typeof Notification !== 'undefined') {
       const title = '환승 알림 🔔';
       const body = `곧 ${nextSegment.startName}에서 ${
-        nextSegment.lineName ?? TYPE_LABEL[nextSegment.type] ?? ''
+        nextSegment.lineName ?? TRANSPORT_LABEL[nextSegment.type] ?? ''
       } 탑승`;
       if (Notification.permission === 'granted') {
         new Notification(title, { body });
@@ -58,7 +54,7 @@ export function TransferAlert({ nextSegment, distanceMeters }: Props) {
           <p className="text-xs font-medium opacity-80">환승 준비</p>
           <p className="font-bold text-sm truncate">
             {nextSegment.startName}에서{' '}
-            {nextSegment.lineName ?? TYPE_LABEL[nextSegment.type]} 탑승
+            {nextSegment.lineName ?? TRANSPORT_LABEL[nextSegment.type]} 탑승
           </p>
         </div>
         {distanceMeters !== null && (

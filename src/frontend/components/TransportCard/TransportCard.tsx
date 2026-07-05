@@ -1,28 +1,9 @@
-import { TransportOption, TransportType } from '@/shared/types';
-
-const TYPE_LABEL: Record<TransportType, string> = {
-  WALK: '도보',
-  BUS: '버스',
-  SUBWAY: '지하철',
-  TAXI: '택시',
-  CAR: '승용차',
-};
-
-const TYPE_COLOR: Record<TransportType, string> = {
-  WALK: 'bg-green-100 text-green-700',
-  BUS: 'bg-blue-100 text-blue-700',
-  SUBWAY: 'bg-purple-100 text-purple-700',
-  TAXI: 'bg-yellow-100 text-yellow-700',
-  CAR: 'bg-indigo-100 text-indigo-700',
-};
-
-const TYPE_ICON: Record<TransportType, string> = {
-  WALK: '🚶',
-  BUS: '🚌',
-  SUBWAY: '🚇',
-  TAXI: '🚕',
-  CAR: '🚗',
-};
+import { TransportOption } from '@/shared/types';
+import {
+  TRANSPORT_BADGE_CLASS,
+  TRANSPORT_ICON,
+  TRANSPORT_LABEL,
+} from '@/frontend/constants';
 
 interface Props {
   option: TransportOption;
@@ -54,9 +35,9 @@ export function TransportCard({ option, selected, onClick }: Props) {
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-xl">{TYPE_ICON[option.type]}</span>
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${TYPE_COLOR[option.type]}`}>
-            {TYPE_LABEL[option.type]}
+          <span className="text-xl">{TRANSPORT_ICON[option.type]}</span>
+          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${TRANSPORT_BADGE_CLASS[option.type]}`}>
+            {TRANSPORT_LABEL[option.type]}
           </span>
         </div>
         <span className="text-lg font-bold text-gray-900">{formatTime(option.totalTime)}</span>

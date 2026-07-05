@@ -10,13 +10,17 @@ interface GeolocationState {
   loading: boolean;
 }
 
+function isGeolocationSupported(): boolean {
+  return typeof navigator !== 'undefined' && 'geolocation' in navigator;
+}
+
 export function useGeolocation(watch = false) {
-  const [state, setState] = useState<GeolocationState>({
+  const [state, setState] = useState<GeolocationState>(() => ({
     position: null,
     accuracy: null,
-    error: null,
-    loading: true,
-  });
+    error: isGeolocationSupported() ? null : '이 브라우저는 위치 서비스를 지원하지 않습니다.',
+    loading: isGeolocationSupported(),
+  }));
 
   const onSuccess = useCallback((pos: GeolocationPosition) => {
     setState({
@@ -32,14 +36,7 @@ export function useGeolocation(watch = false) {
   }, []);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setState((prev) => ({
-        ...prev,
-        error: '이 브라우저는 위치 서비스를 지원하지 않습니다.',
-        loading: false,
-      }));
-      return;
-    }
+    if (!isGeolocationSupported()) return;
 
     const options: PositionOptions = {
       enableHighAccuracy: true,

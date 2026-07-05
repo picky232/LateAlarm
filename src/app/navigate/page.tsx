@@ -12,6 +12,10 @@ import { useShareSession } from '@/frontend/hooks/useShareSession';
 import { useTurnByTurn } from '@/frontend/hooks/useTurnByTurn';
 import { LoadingSpinner } from '@/frontend/components/UI/LoadingSpinner';
 import { ACTIVE_ROUTE_STORAGE_KEY } from '@/frontend/constants';
+import { haversineDistance } from '@/shared/utils/distance';
+
+/** 도착 판정 반경 (m) */
+const ARRIVAL_RADIUS = 50;
 
 function NavigateContent() {
   const router = useRouter();
@@ -72,25 +76,32 @@ function NavigateContent() {
     return () => clearInterval(interval);
   }, [shareSessionId, updateLocation]);
 
-  // 도착 감지: 목적지 50m 이내
+  // 30초마다 현재 시각 갱신 — 남은 시간 표시용 (렌더 중 Date.now() 호출 방지)
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
-    if (!position || arrived) return;
-    const dist = Math.sqrt(
-      Math.pow((position.lat - dest.lat) * 111000, 2) +
-        Math.pow((position.lng - dest.lng) * 88000, 2)
-    );
-    if (dist < 50) setArrived(true);
-  }, [position, dest, arrived]);
+    const tick = () => setNow(Date.now());
+    const first = setTimeout(tick, 0);
+    const interval = setInterval(tick, 30000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // 도착 감지: 목적지 50m 이내 (렌더 중 상태 보정 패턴)
+  if (!arrived && position && haversineDistance(position, dest) < ARRIVAL_RADIUS) {
+    setArrived(true);
+  }
 
   if (!route) return <LoadingSpinner text="경로 정보 없음" />;
 
   const segments = route.segments;
   const currentSegment = segments[currentSegmentIndex];
   const nextSegment = segments[currentSegmentIndex + 1];
-  const remainingMinutes = Math.max(
-    0,
-    Math.ceil((new Date(route.arrivalTime).getTime() - Date.now()) / 60000)
-  );
+  const remainingMinutes =
+    now === null
+      ? 0
+      : Math.max(0, Math.ceil((new Date(route.arrivalTime).getTime() - now) / 60000));
 
   return (
     <main className="h-dvh flex flex-col relative">

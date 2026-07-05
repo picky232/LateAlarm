@@ -7,7 +7,7 @@ import {
   off,
 } from 'firebase/database';
 import { getFirebaseDb } from './FirebaseClient';
-import { ShareSession, Coordinate, TransportOption } from '@/shared/types';
+import { ShareSession, Coordinate } from '@/shared/types';
 import {
   IShareRepository,
   CreateShareParams,

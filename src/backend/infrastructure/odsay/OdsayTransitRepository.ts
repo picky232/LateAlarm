@@ -9,6 +9,7 @@ import {
   WALK_SPEED_MAP,
 } from '@/shared/types';
 import { ITransitRepository, SearchRouteParams } from '@/shared/domains/transit/repositories/ITransitRepository';
+import { haversineDistance } from '@/shared/utils/distance';
 import { OdsayApiError, OdsayClient } from './OdsayClient';
 
 // 대중교통 경로가 없을 뿐 도보·택시는 안내 가능한 ODsay 에러 코드
@@ -29,18 +30,6 @@ function calcTaxiCost(distanceM: number): number {
 function calcTaxiTime(distanceM: number): number {
   // 서울 평균 택시 속도 25km/h 기준
   return Math.ceil(distanceM / (25000 / 60));
-}
-
-function haversineDistance(a: Coordinate, b: Coordinate): number {
-  const R = 6371000;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((a.lat * Math.PI) / 180) *
-      Math.cos((b.lat * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
 function getSubwayColor(subwayCode: number): string {
