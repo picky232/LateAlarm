@@ -12,7 +12,7 @@ import { KakaoMap } from '@/frontend/components/Map/KakaoMap';
 import { RouteTopBar } from '@/frontend/components/Route/RouteTopBar';
 import { useGeolocation } from '@/frontend/hooks/useGeolocation';
 import { useRouteGeometry } from '@/frontend/hooks/useRouteGeometry';
-import { ACTIVE_ROUTE_STORAGE_KEY } from '@/frontend/constants';
+import { ACTIVE_ROUTE_STORAGE_KEY, TRANSPORT_ICON } from '@/frontend/constants';
 
 type Filter = 'ALL' | 'SUBWAY' | 'BUS' | 'ETC';
 
@@ -95,6 +95,22 @@ function ResultContent() {
     [result, filter]
   );
 
+  // 유형별 최단 시간 요약 — 접힌 시트에서도 이동수단 다양성이 보이게
+  const typeSummary = useMemo(() => {
+    const best = new Map<TransportType, number>();
+    for (const o of result?.options ?? []) {
+      const cur = best.get(o.type);
+      if (cur === undefined || o.totalTime < cur) best.set(o.type, o.totalTime);
+    }
+    const order: TransportType[] = ['SUBWAY', 'BUS', 'TAXI', 'CAR', 'WALK'];
+    return order
+      .filter((t) => best.has(t))
+      .map((t) => ({ type: t, time: best.get(t)! }));
+  }, [result]);
+
+  const filterForType = (type: TransportType): Filter =>
+    type === 'SUBWAY' || type === 'BUS' ? type : 'ETC';
+
   const startNavigate = () => {
     if (!selected) return;
     const enriched = enrichedSegments ? { ...selected, segments: enrichedSegments } : selected;
@@ -142,7 +158,26 @@ function ResultContent() {
       />
 
       {/* 경로 목록 바텀시트 */}
-      <BottomSheet expanded={sheetExpanded} onToggle={setSheetExpanded}>
+      <BottomSheet expanded={sheetExpanded} onToggle={setSheetExpanded} peekHeight={290}>
+        {/* 유형별 최단 시간 요약 — 탭하면 해당 유형 필터 + 시트 확장 */}
+        <div className="px-4 pb-2 flex gap-2 overflow-x-auto shrink-0">
+          {typeSummary.map((s) => (
+            <button
+              key={s.type}
+              onClick={() => {
+                setFilter(filterForType(s.type));
+                setSheetExpanded(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl whitespace-nowrap"
+            >
+              <span className="text-base">{TRANSPORT_ICON[s.type]}</span>
+              <span className="text-xs font-bold text-gray-700">
+                {s.time >= 60 ? `${Math.floor(s.time / 60)}시간 ${s.time % 60}분` : `${s.time}분`}
+              </span>
+            </button>
+          ))}
+        </div>
+
         {/* 이동수단 필터 칩 */}
         <div className="px-4 pb-2 flex gap-2 overflow-x-auto shrink-0">
           {FILTERS.map((f) => (
