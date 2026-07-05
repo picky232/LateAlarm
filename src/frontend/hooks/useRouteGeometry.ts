@@ -101,11 +101,7 @@ async function enrichTransit(
   segments: RouteSegment[],
   mapObj: string
 ): Promise<RouteSegment[]> {
-  const res = await fetch('/api/transit/lane', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mapObj }),
-  });
+  const res = await fetch(`/api/transit/lane?mapObj=${encodeURIComponent(mapObj)}`);
   const data = await res.json();
   if (!res.ok || !Array.isArray(data.lanes)) return markApproximate(segments);
 

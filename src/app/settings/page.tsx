@@ -12,6 +12,7 @@ export default function SettingsPage() {
     <main className="min-h-dvh bg-gray-50">
       <header className="flex items-center gap-3 px-4 pt-12 pb-4 bg-white border-b border-gray-100">
         <button
+          aria-label="뒤로가기"
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center text-gray-600"
         >

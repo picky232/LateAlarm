@@ -128,7 +128,8 @@ npm start
 - [x] **Phase 2** — Firebase 실시간 위치 공유, 수신자 추적 지도
 - [x] **Phase 3** — Turn-by-Turn 자동 구간 진행, 환승 알림(진동·Web Notification), 설정 페이지(`/settings`) 및 엘리베이터 선호 반영, 진행 구간 지도 강조
 - [x] **Phase 4a** — CI/CD 구축 (GitHub Actions + Vercel 자동 배포)
-- [ ] **Phase 4b** — 성능 최적화, 접근성
+- [x] **Phase 4b** — 노선 좌표 서버 캐시(ODsay 쿼터 절약, 145ms→12ms), 접근성(aria-label·aria-pressed·role=alert), OG 메타태그
+- [ ] **Phase 5** — Firebase 연동 마무리(위치 공유 실동작), PWA 오프라인, 도착 히스토리
 
 ---
 

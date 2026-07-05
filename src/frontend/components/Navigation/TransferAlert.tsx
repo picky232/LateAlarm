@@ -44,7 +44,7 @@ export function TransferAlert({ nextSegment, distanceMeters }: Props) {
   }, [nextSegment]);
 
   return (
-    <div className="absolute top-24 left-4 right-4 z-30 animate-pulse">
+    <div role="alert" className="absolute top-24 left-4 right-4 z-30 animate-pulse">
       <div
         className="rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3 text-white"
         style={{ backgroundColor: nextSegment.lineColor ?? '#2563eb' }}

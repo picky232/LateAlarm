@@ -118,9 +118,10 @@ export default function HomePage() {
               className="flex-1 text-sm outline-none placeholder-gray-300 font-medium text-gray-800"
             />
             {destText ? (
-              <button onMouseDown={resetDest} className="text-gray-300 text-xl leading-none shrink-0">✕</button>
+              <button aria-label="목적지 지우기" onMouseDown={resetDest} className="text-gray-300 text-xl leading-none shrink-0">✕</button>
             ) : (
               <button
+                aria-label="설정"
                 onMouseDown={() => router.push('/settings')}
                 className="text-gray-300 text-xl leading-none shrink-0"
               >
@@ -203,6 +204,7 @@ export default function HomePage() {
 
       {/* 현재위치 버튼 */}
       <button
+        aria-label="현재 위치로 이동"
         onClick={() => {
           if (position) {
             setOrigin(position);

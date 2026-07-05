@@ -108,6 +108,7 @@ function NavigateContent() {
       {/* 상단 도착 시각 바 */}
       <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-12 pb-3 bg-gradient-to-b from-white/95 to-transparent">
         <button
+          aria-label="뒤로가기"
           onClick={() => router.back()}
           className="w-9 h-9 bg-white rounded-full shadow flex items-center justify-center text-gray-600"
         >
@@ -149,7 +150,7 @@ function NavigateContent() {
 
       {/* 도착 완료 */}
       {arrived && (
-        <div className="absolute inset-0 bg-blue-500/90 z-50 flex flex-col items-center justify-center text-white">
+        <div role="alert" className="absolute inset-0 bg-blue-500/90 z-50 flex flex-col items-center justify-center text-white">
           <span className="text-6xl mb-4">🎉</span>
           <p className="text-2xl font-black mb-2">도착!</p>
           <p className="text-blue-100 mb-8">목적지에 도착했습니다</p>
