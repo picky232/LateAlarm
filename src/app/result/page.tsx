@@ -148,6 +148,7 @@ function ResultContent() {
           {FILTERS.map((f) => (
             <button
               key={f.key}
+              aria-pressed={filter === f.key}
               onClick={() => {
                 setFilter(f.key);
                 setSheetExpanded(true);

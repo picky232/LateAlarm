@@ -6,6 +6,15 @@ export const metadata: Metadata = {
   title: '지각 알리미',
   description: '내가 얼마나 늦는지, 기다리는 사람이 실시간으로 알 수 있는 앱',
   manifest: '/manifest.json',
+  metadataBase: new URL('https://late-alarm.vercel.app'),
+  openGraph: {
+    title: '지각 알리미 🏃',
+    description: '내 위치와 도착 예정 시각을 실시간으로 확인하세요 — 앱 설치 없이 링크만으로',
+    url: 'https://late-alarm.vercel.app',
+    siteName: '지각 알리미',
+    locale: 'ko_KR',
+    type: 'website',
+  },
 };
 
 export const viewport: Viewport = {

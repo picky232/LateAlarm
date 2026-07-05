@@ -58,7 +58,7 @@ export function ShareLinkModal({
       <div className="bg-white w-full max-w-md rounded-t-3xl p-6 pb-8">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold">위치 공유</h2>
-          <button onClick={onClose} className="text-gray-400 text-2xl leading-none">×</button>
+          <button aria-label="닫기" onClick={onClose} className="text-gray-400 text-2xl leading-none">×</button>
         </div>
 
         <p className="text-sm text-gray-500 mb-4">
