@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Coordinate } from '@/shared/types';
 import { useGeolocation } from '@/frontend/hooks/useGeolocation';
@@ -26,13 +26,11 @@ export default function HomePage() {
   const [showPanel, setShowPanel] = useState(false);
   const [searching, setSearching] = useState(false);
 
-  // GPS → origin 기본값
-  useEffect(() => {
-    if (position && !origin) {
-      setOrigin(position);
-      setMapCenter(position);
-    }
-  }, [position, origin]);
+  // GPS → origin 기본값 (렌더 중 상태 보정 패턴 — 최초 1회만)
+  if (position && !origin) {
+    setOrigin(position);
+    setMapCenter(position);
+  }
 
   const handleDestChange = (v: string) => {
     setDestText(v);

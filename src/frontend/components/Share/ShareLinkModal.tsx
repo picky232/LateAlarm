@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { TransportOption, Coordinate } from '@/shared/types';
+import { useShareSession } from '@/frontend/hooks/useShareSession';
 
 interface Props {
   origin: Coordinate;
@@ -24,25 +25,22 @@ export function ShareLinkModal({
   const [loading, setLoading] = useState(false);
   const [expires, setExpires] = useState(60);
   const [copied, setCopied] = useState(false);
+  const { createSession } = useShareSession(null);
 
   const generateLink = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          origin,
-          destination,
-          currentLocation,
-          selectedRoute,
-          expiresInMinutes: expires,
-        }),
+      const sessionId = await createSession({
+        origin,
+        destination,
+        currentLocation,
+        selectedRoute,
+        expiresInMinutes: expires,
       });
-      const { sessionId } = await res.json();
-      const url = `${window.location.origin}/share/${sessionId}`;
-      setLink(url);
-      onSessionCreated?.(sessionId as string);
+      setLink(`${window.location.origin}/share/${sessionId}`);
+      onSessionCreated?.(sessionId);
+    } catch {
+      // 실패 시 버튼 상태만 복구 — 재시도 가능
     } finally {
       setLoading(false);
     }
