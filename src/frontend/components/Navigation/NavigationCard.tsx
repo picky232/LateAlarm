@@ -63,10 +63,10 @@ export function NavigationCard({
                 >
                   {currentSegment.lineName}
                 </span>
-                {currentSegment.endName} 방면
+                {currentSegment.endName ?? '하차 정류장'} 방면
               </>
             ) : (
-              `${currentSegment.endName}까지`
+              `${currentSegment.endName ?? '다음 지점'}까지`
             )}
           </p>
           {currentSegment.stationCount ? (
@@ -101,7 +101,7 @@ export function NavigationCard({
         <div className="flex items-center gap-2 px-1 text-sm text-gray-400">
           <span>{TRANSPORT_ICON[nextSegment.type]}</span>
           <span className="truncate">
-            다음: {nextSegment.startName}에서{' '}
+            다음: {nextSegment.startName ?? '다음 정류장'}에서{' '}
             {nextSegment.lineName ? (
               <span className="font-bold text-gray-600">{nextSegment.lineName}</span>
             ) : null}{' '}

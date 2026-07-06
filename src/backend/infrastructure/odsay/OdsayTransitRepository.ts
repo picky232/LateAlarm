@@ -88,6 +88,8 @@ function buildSegments(
       busType = lane.type;
       lineColor = getBusColor(lane.type);
       lineName = lane.busNo;
+    } else if (type === 'WALK') {
+      lineColor = '#6B7280'; // 도보 — 회색 (지도 점선·카드 색상 바 공용)
     }
 
     return {
