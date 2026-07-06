@@ -36,6 +36,20 @@ export interface RouteSegment {
   stationCount?: number;
   /** 실경로가 아닌 근사(직선) 좌표 여부 — 지도에서 점선 표시 */
   approximate?: boolean;
+  /** 탑승 정류장 ODsay ID — 실시간 버스 도착 조회용 */
+  startStationId?: number;
+}
+
+// ─── 실시간 버스 도착 ──────────────────────────────────
+export interface BusArrival {
+  /** 버스 번호 */
+  routeName: string;
+  /** 첫 차 도착까지 남은 초 */
+  arrivalSec: number;
+  /** 첫 차 남은 정거장 수 */
+  leftStationCount: number;
+  /** 다음 차 도착까지 남은 초 (없으면 null) */
+  nextArrivalSec: number | null;
 }
 
 // ─── 도착 예측 ─────────────────────────────────────────
@@ -83,6 +97,8 @@ export interface OdsaySubPath {
   stationCount?: number;
   startName: string;
   endName: string;
+  /** 탑승 정류장 ODsay ID (버스 구간) */
+  startID?: number;
   lane?: Array<{
     busNo?: string;
     type?: number;

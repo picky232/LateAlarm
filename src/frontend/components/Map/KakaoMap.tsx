@@ -97,14 +97,14 @@ export function KakaoMap({ center, segments, currentPosition, destination, activ
         const path = valid.map((c) => new maps.LatLng(c.lat, c.lng));
         path.forEach((p) => bounds.extend(p));
 
-        const isDimmed = activeSegmentIndex !== undefined && i !== activeSegmentIndex;
+        const isActive = activeSegmentIndex === undefined || i === activeSegmentIndex;
         const isDashed = seg.type === 'WALK' || seg.approximate === true;
 
         // 흰색 캐이싱(테두리) — 지도 위에서 경로가 선명하게 도드라지도록
-        if (!isDimmed && !isDashed) {
+        if (isActive && !isDashed) {
           const casing = new maps.Polyline({
             path,
-            strokeWeight: 10,
+            strokeWeight: 12,
             strokeColor: '#ffffff',
             strokeOpacity: 0.9,
             strokeStyle: 'solid',
@@ -115,9 +115,10 @@ export function KakaoMap({ center, segments, currentPosition, destination, activ
 
         const polyline = new maps.Polyline({
           path,
-          strokeWeight: seg.type === 'WALK' ? 4 : 7,
+          strokeWeight: seg.type === 'WALK' ? 4 : isActive ? 8 : 6,
           strokeColor: seg.lineColor ?? '#555555',
-          strokeOpacity: isDimmed ? 0.35 : 1,
+          // 비활성 구간도 경로 전체 흐름이 보이게 유지 — 활성 구간은 캐이싱+두께로 구분
+          strokeOpacity: isActive ? 1 : 0.55,
           strokeStyle: isDashed ? 'shortdot' : 'solid',
           map,
         });
