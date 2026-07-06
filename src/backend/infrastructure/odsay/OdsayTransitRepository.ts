@@ -102,18 +102,26 @@ function buildSegments(
       lineColor,
       busType,
       stationCount: sp.stationCount,
+      startStationId: type === 'BUS' ? sp.startID : undefined,
     };
   });
 
-  // 좌표 없는 구간(주로 도보) 보간: 이전 구간 끝점 → 다음 구간 시작점
+  // 좌표·이름 없는 구간(주로 도보) 보간 — ODsay는 도보 subPath에 좌표와 정류장명을 주지 않음
   for (let i = 0; i < segments.length; i++) {
-    if (segments[i].coordinates.length >= 2) continue;
-    const prevEnd =
-      i > 0 ? segments[i - 1].coordinates[segments[i - 1].coordinates.length - 1] : origin;
-    const nextStart =
-      i < segments.length - 1 ? segments[i + 1].coordinates[0] : destination;
-    const points = [prevEnd, nextStart].filter((c): c is Coordinate => Boolean(c && isValidCoord(c)));
-    segments[i] = { ...segments[i], coordinates: points };
+    if (segments[i].coordinates.length < 2) {
+      const prevEnd =
+        i > 0 ? segments[i - 1].coordinates[segments[i - 1].coordinates.length - 1] : origin;
+      const nextStart =
+        i < segments.length - 1 ? segments[i + 1].coordinates[0] : destination;
+      const points = [prevEnd, nextStart].filter((c): c is Coordinate => Boolean(c && isValidCoord(c)));
+      segments[i] = { ...segments[i], coordinates: points };
+    }
+    if (!segments[i].startName) {
+      segments[i] = { ...segments[i], startName: segments[i - 1]?.endName ?? '출발지' };
+    }
+    if (!segments[i].endName) {
+      segments[i] = { ...segments[i], endName: segments[i + 1]?.startName ?? '목적지' };
+    }
   }
 
   return segments.filter((s) => s.coordinates.length >= 2);

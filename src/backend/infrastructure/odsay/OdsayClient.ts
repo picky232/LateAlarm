@@ -84,6 +84,20 @@ export class OdsayClient {
     return data;
   }
 
+  /** 정류장 실시간 버스 도착 정보 — 미제공 지역은 result.error로 반환됨 */
+  async realtimeStation(stationId: number): Promise<unknown> {
+    const params = new URLSearchParams({
+      apiKey: this.apiKey,
+      stationID: String(stationId),
+      stationBase: '0',
+    });
+    const res = await fetch(`${this.baseUrl}/realtimeStation?${params}`, {
+      headers: { Referer: this.referer },
+      next: { revalidate: 0 },
+    });
+    return this.parseResponse(res, 'ODsay 실시간 도착');
+  }
+
   private async parseResponse(res: Response, label: string): Promise<OdsayResponse> {
     const text = await res.text();
     let data: OdsayResponse | null = null;

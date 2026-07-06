@@ -10,6 +10,7 @@ import { ShareLinkModal } from '@/frontend/components/Share/ShareLinkModal';
 import { useGeolocation } from '@/frontend/hooks/useGeolocation';
 import { useShareSession } from '@/frontend/hooks/useShareSession';
 import { useTurnByTurn } from '@/frontend/hooks/useTurnByTurn';
+import { useBusArrival } from '@/frontend/hooks/useBusArrival';
 import { LoadingSpinner } from '@/frontend/components/UI/LoadingSpinner';
 import { ACTIVE_ROUTE_STORAGE_KEY } from '@/frontend/constants';
 import { haversineDistance } from '@/shared/utils/distance';
@@ -76,32 +77,25 @@ function NavigateContent() {
     return () => clearInterval(interval);
   }, [shareSessionId, updateLocation]);
 
-  // 30초마다 현재 시각 갱신 — 남은 시간 표시용 (렌더 중 Date.now() 호출 방지)
-  const [now, setNow] = useState<number | null>(null);
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const first = setTimeout(tick, 0);
-    const interval = setInterval(tick, 30000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(interval);
-    };
-  }, []);
-
   // 도착 감지: 목적지 50m 이내 (렌더 중 상태 보정 패턴)
   if (!arrived && position && haversineDistance(position, dest) < ARRIVAL_RADIUS) {
     setArrived(true);
   }
 
-  if (!route) return <LoadingSpinner text="경로 정보 없음" />;
-
-  const segments = route.segments;
+  const segments = route?.segments ?? [];
   const currentSegment = segments[currentSegmentIndex];
   const nextSegment = segments[currentSegmentIndex + 1];
-  const remainingMinutes =
-    now === null
-      ? 0
-      : Math.max(0, Math.ceil((new Date(route.arrivalTime).getTime() - now) / 60000));
+
+  // 탑승 예정(다음 구간 우선) 또는 탑승 중인 버스의 실시간 도착 정보
+  const busSegment =
+    nextSegment?.type === 'BUS' ? nextSegment : currentSegment?.type === 'BUS' ? currentSegment : undefined;
+  const busArrival = useBusArrival(busSegment?.startStationId, busSegment?.lineName);
+
+  if (!route) return <LoadingSpinner text="경로 정보 없음" />;
+  // 남은 시간 = 현재 구간부터 남은 구간 소요 시간 합산 (구간 진행에 따라 감소)
+  const remainingMinutes = segments
+    .slice(currentSegmentIndex)
+    .reduce((sum, seg) => sum + seg.time, 0);
 
   return (
     <main className="h-dvh flex flex-col relative">
@@ -171,6 +165,7 @@ function NavigateContent() {
             nextSegment={nextSegment}
             arrivalTime={new Date(route.arrivalTime)}
             remainingMinutes={remainingMinutes}
+            busArrival={busArrival}
           />
           <div className="bg-white px-4 pb-6 flex gap-2">
             <button
