@@ -30,7 +30,7 @@ export function TransferAlert({ nextSegment, distanceMeters }: Props) {
 
     if (typeof Notification !== 'undefined') {
       const title = '환승 알림 🔔';
-      const body = `곧 ${nextSegment.startName}에서 ${
+      const body = `곧 ${nextSegment.startName ?? '다음 정류장'}에서 ${
         nextSegment.lineName ?? TRANSPORT_LABEL[nextSegment.type] ?? ''
       } 탑승`;
       if (Notification.permission === 'granted') {
@@ -53,7 +53,7 @@ export function TransferAlert({ nextSegment, distanceMeters }: Props) {
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium opacity-80">환승 준비</p>
           <p className="font-bold text-sm truncate">
-            {nextSegment.startName}에서{' '}
+            {nextSegment.startName ?? '다음 정류장'}에서{' '}
             {nextSegment.lineName ?? TRANSPORT_LABEL[nextSegment.type]} 탑승
           </p>
         </div>
