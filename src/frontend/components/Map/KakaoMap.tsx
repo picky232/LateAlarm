@@ -104,7 +104,7 @@ export function KakaoMap({ center, segments, currentPosition, destination, activ
         if (isActive && !isDashed) {
           const casing = new maps.Polyline({
             path,
-            strokeWeight: 13,
+            strokeWeight: 9,
             strokeColor: '#ffffff',
             strokeOpacity: 1,
             strokeStyle: 'solid',
@@ -116,7 +116,7 @@ export function KakaoMap({ center, segments, currentPosition, destination, activ
         // 모든 구간을 이동수단별 고유색으로 진하게 — 흐림 없이 전체 동선이 이어져 보이게
         const polyline = new maps.Polyline({
           path,
-          strokeWeight: seg.type === 'WALK' ? 5 : isActive ? 9 : 7,
+          strokeWeight: seg.type === 'WALK' ? 4 : isActive ? 6 : 5,
           strokeColor: seg.lineColor ?? (seg.type === 'WALK' ? '#6B7280' : '#555555'),
           strokeOpacity: 1,
           strokeStyle: isDashed ? 'shortdot' : 'solid',
