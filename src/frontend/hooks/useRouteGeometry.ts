@@ -21,12 +21,12 @@ export function useRouteGeometry(
   const cacheKey = option ? buildCacheKey(option, origin, destination) : null;
   // 서버가 이미 실좌표를 채워줬으면(승용차 보정 등) 재조회 불필요
   const alreadyReal =
-    option !== null &&
-    option.segments.every((s) => s.type === 'WALK' || s.coordinates.length > 2);
+    option !== null && option.segments.every((s) => s.coordinates.length > 2);
+  const hasWalk = option !== null && option.segments.some((s) => s.type === 'WALK');
   const needsFetch =
     option !== null &&
     !alreadyReal &&
-    (option.type === 'TAXI' || Boolean(option.mapObj));
+    (option.type === 'TAXI' || Boolean(option.mapObj) || hasWalk);
   const cached = cacheKey ? cache.get(cacheKey) : undefined;
 
   useEffect(() => {
@@ -38,7 +38,10 @@ export function useRouteGeometry(
     const enrich =
       option.type === 'TAXI'
         ? enrichTaxi(option.segments, origin, destination)
-        : enrichTransit(option.segments, option.mapObj!);
+        : (option.mapObj
+            ? enrichTransit(option.segments, option.mapObj)
+            : Promise.resolve(option.segments)
+          ).then(enrichWalks); // 탑승 구간 실경로 후 도보 구간도 보행자 경로로
 
     enrich
       .catch(() => markApproximate(option.segments)) // 실패 시 근사 경로로 캐시
@@ -94,6 +97,28 @@ async function enrichTaxi(
     s.type === 'TAXI'
       ? { ...s, coordinates: data.route.coordinates, approximate: false }
       : s
+  );
+}
+
+/** 직선(2점)뿐인 도보 구간을 OSRM 보행자 실경로로 교체 — 실패 시 직선 유지 */
+async function enrichWalks(segments: RouteSegment[]): Promise<RouteSegment[]> {
+  return Promise.all(
+    segments.map(async (s) => {
+      if (s.type !== 'WALK' || s.coordinates.length !== 2) return s;
+      const [from, to] = s.coordinates;
+      try {
+        const res = await fetch(
+          `/api/route/walk?fromLat=${from.lat}&fromLng=${from.lng}&toLat=${to.lat}&toLng=${to.lng}`
+        );
+        const data = await res.json();
+        if (res.ok && Array.isArray(data.coordinates) && data.coordinates.length >= 2) {
+          return { ...s, coordinates: data.coordinates, approximate: false };
+        }
+      } catch {
+        // 보행 라우팅 실패 → 직선 점선 유지
+      }
+      return s;
+    })
   );
 }
 
