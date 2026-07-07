@@ -27,15 +27,17 @@ export class FirebaseShareRepository implements IShareRepository {
     const id = generateId();
     const now = new Date();
     const expiresAt = new Date(now.getTime() + params.expiresInMinutes * 60000);
+    // API Route가 JSON.parse한 selectedRoute는 arrivalTime이 문자열 — Date로 정규화
+    const estimatedArrival = new Date(params.selectedRoute.arrivalTime);
 
     const session: ShareSession = {
       id,
       origin: params.origin,
       destination: params.destination,
       currentLocation: params.currentLocation,
-      selectedRoute: params.selectedRoute,
-      estimatedArrival: params.selectedRoute.arrivalTime,
-      remainingMinutes: calcRemainingMinutes(params.selectedRoute.arrivalTime),
+      selectedRoute: { ...params.selectedRoute, arrivalTime: estimatedArrival },
+      estimatedArrival,
+      remainingMinutes: calcRemainingMinutes(estimatedArrival),
       lastUpdated: now,
       expiresAt,
       isArrived: false,
@@ -43,9 +45,10 @@ export class FirebaseShareRepository implements IShareRepository {
 
     await set(ref(db, `sessions/${id}`), {
       ...session,
-      estimatedArrival: session.estimatedArrival.toISOString(),
-      lastUpdated: session.lastUpdated.toISOString(),
-      expiresAt: session.expiresAt.toISOString(),
+      selectedRoute: { ...session.selectedRoute, arrivalTime: estimatedArrival.toISOString() },
+      estimatedArrival: estimatedArrival.toISOString(),
+      lastUpdated: now.toISOString(),
+      expiresAt: expiresAt.toISOString(),
     });
 
     return session;
@@ -97,8 +100,13 @@ export class FirebaseShareRepository implements IShareRepository {
   }
 
   private deserialize(data: Record<string, unknown>): ShareSession {
+    const selectedRoute = data.selectedRoute as Record<string, unknown>;
     return {
       ...(data as unknown as ShareSession),
+      selectedRoute: {
+        ...selectedRoute,
+        arrivalTime: new Date(selectedRoute.arrivalTime as string),
+      } as ShareSession['selectedRoute'],
       estimatedArrival: new Date(data.estimatedArrival as string),
       lastUpdated: new Date(data.lastUpdated as string),
       expiresAt: new Date(data.expiresAt as string),

@@ -33,9 +33,9 @@ export function useShareSession(sessionId: string | null) {
           expiresInMinutes: params.expiresInMinutes ?? 60,
         }),
       });
-      if (!res.ok) throw new Error('공유 세션 생성 실패');
-      const { sessionId: id } = await res.json();
-      return id as string;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? '공유 세션 생성 실패');
+      return data.sessionId as string;
     } catch (e) {
       const msg = e instanceof Error ? e.message : '공유 세션 생성 실패';
       setError(msg);
