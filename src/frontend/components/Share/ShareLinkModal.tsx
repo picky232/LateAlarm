@@ -25,10 +25,12 @@ export function ShareLinkModal({
   const [loading, setLoading] = useState(false);
   const [expires, setExpires] = useState(60);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { createSession } = useShareSession(null);
 
   const generateLink = async () => {
     setLoading(true);
+    setError(null);
     try {
       const sessionId = await createSession({
         origin,
@@ -39,8 +41,8 @@ export function ShareLinkModal({
       });
       setLink(`${window.location.origin}/share/${sessionId}`);
       onSessionCreated?.(sessionId);
-    } catch {
-      // 실패 시 버튼 상태만 복구 — 재시도 가능
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '링크 생성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
@@ -80,13 +82,18 @@ export function ShareLinkModal({
         </div>
 
         {!link ? (
-          <button
-            onClick={generateLink}
-            disabled={loading}
-            className="w-full py-3.5 bg-blue-500 text-white rounded-2xl font-bold text-sm disabled:opacity-60"
-          >
-            {loading ? '링크 생성 중...' : '공유 링크 생성'}
-          </button>
+          <>
+            {error && (
+              <p role="alert" className="text-sm text-red-500 mb-3">{error}</p>
+            )}
+            <button
+              onClick={generateLink}
+              disabled={loading}
+              className="w-full py-3.5 bg-blue-500 text-white rounded-2xl font-bold text-sm disabled:opacity-60"
+            >
+              {loading ? '링크 생성 중...' : '공유 링크 생성'}
+            </button>
+          </>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
